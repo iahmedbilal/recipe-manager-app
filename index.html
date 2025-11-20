@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Recipe Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-logo">🍲</span>
+        <h1 class="brand-title">Recipe Manager App</h1>
+      </div>
+      <button id="addRecipeBtn" class="btn btn-primary">+ Add Recipe</button>
+    </header>
+
+    <main class="app-main">
+      <!-- HOME / LIST VIEW -->
+      <section id="homeView" class="view active">
+        <div class="toolbar">
+          <div class="field-group">
+            <label for="searchInput">Search by title</label>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search recipes..."
+            />
+          </div>
+
+          <div class="field-group">
+            <label for="difficultyFilter">Difficulty</label>
+            <select id="difficultyFilter">
+              <option value="all">All</option>
+              <option value="Easy">Easy</option>
+              <option value="Medium">Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label for="maxPrepTimeFilter">Max prep time (mins)</label>
+            <input
+              type="number"
+              id="maxPrepTimeFilter"
+              placeholder="Any"
+              min="0"
+            />
+          </div>
+        </div>
+
+        <div id="recipeGrid" class="recipe-grid">
+          <!-- Recipe cards injected here -->
+        </div>
+
+        <p id="emptyState" class="empty-state" hidden>
+          No recipes found. Try changing your search or add a new recipe.
+        </p>
+      </section>
+
+      <!-- DETAIL VIEW -->
+      <section id="detailView" class="view">
+        <button class="btn btn-ghost" id="backToListFromDetail">
+          ← Back to list
+        </button>
+
+        <div id="detailContainer" class="detail-container">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="detail-actions">
+          <button id="editRecipeBtn" class="btn btn-secondary">✏️ Edit</button>
+          <button id="deleteRecipeBtn" class="btn btn-danger">🗑 Delete</button>
+        </div>
+      </section>
+
+      <!-- ADD / EDIT FORM VIEW -->
+      <section id="formView" class="view">
+        <button class="btn btn-ghost" id="backToListFromForm">
+          ← Back to list
+        </button>
+
+        <h2 id="formTitle">Add Recipe</h2>
+
+        <form id="recipeForm" novalidate>
+          <input type="hidden" id="recipeId" />
+
+          <div class="form-grid">
+            <div class="field-group">
+              <label for="titleInput">Title *</label>
+              <input
+                type="text"
+                id="titleInput"
+                placeholder="e.g., Ahmed's Special Chicken Noodles"
+                required
+              />
+            </div>
+
+            <div class="field-group">
+              <label for="difficultyInput">Difficulty *</label>
+              <select id="difficultyInput" required>
+                <option value="">Select difficulty</option>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
+            </div>
+
+            <div class="field-group">
+              <label for="prepTimeInput">Prep time (mins) *</label>
+              <input
+                type="number"
+                id="prepTimeInput"
+                min="0"
+                placeholder="15"
+                required
+              />
+            </div>
+
+            <div class="field-group">
+              <label for="cookTimeInput">Cook time (mins) *</label>
+              <input
+                type="number"
+                id="cookTimeInput"
+                min="0"
+                placeholder="30"
+                required
+              />
+            </div>
+
+            <div class="field-group full-width">
+              <label for="imageUrlInput">Image URL (optional)</label>
+              <input
+                type="url"
+                id="imageUrlInput"
+                placeholder="https://example.com/my-dish.jpg"
+              />
+            </div>
+
+            <div class="field-group full-width">
+              <label for="descriptionInput">Short description *</label>
+              <textarea
+                id="descriptionInput"
+                rows="2"
+                placeholder="A quick and tasty chicken noodle recipe..."
+                required
+              ></textarea>
+            </div>
+
+            <div class="field-group full-width">
+              <label for="ingredientsInput">
+                Ingredients * (one per line)
+              </label>
+              <textarea
+                id="ingredientsInput"
+                rows="4"
+                placeholder="- 200g noodles&#10;- 150g chicken&#10;- 1 tbsp soy sauce"
+                required
+              ></textarea>
+            </div>
+
+            <div class="field-group full-width">
+              <label for="stepsInput">Steps * (one per line)</label>
+              <textarea
+                id="stepsInput"
+                rows="5"
+                placeholder="1. Boil noodles...&#10;2. Stir-fry chicken..."
+                required
+              ></textarea>
+            </div>
+          </div>
+
+          <div id="formErrors" class="form-errors" role="alert"></div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Recipe</button>
+            <button type="button" id="resetFormBtn" class="btn btn-ghost">
+              Reset
+            </button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <small>Ahmed Bilal's Recipe manager app</small>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
