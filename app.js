@@ -1,3 +1,5 @@
+
+
 (function () {
   "use strict";
 
@@ -38,7 +40,6 @@
   const formTitle = document.getElementById("formTitle");
   const recipeForm = document.getElementById("recipeForm");
   const formErrors = document.getElementById("formErrors");
-  const resetFormBtn = document.getElementById("resetFormBtn");
 
   const recipeIdInput = document.getElementById("recipeId");
   const titleInput = document.getElementById("titleInput");
@@ -49,8 +50,7 @@
   const descriptionInput = document.getElementById("descriptionInput");
   const ingredientsInput = document.getElementById("ingredientsInput");
   const stepsInput = document.getElementById("stepsInput");
-
-  // ---------- Storage helpers ----------
+  const resetFormBtn = document.getElementById("resetFormBtn");
 
   function loadRecipesFromStorage() {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -61,12 +61,10 @@
 
     try {
       const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed)) {
-        throw new Error("recipes is not an array");
-      }
+      if (!Array.isArray(parsed)) throw new Error("recipes not array");
       return parsed;
     } catch (err) {
-      console.warn("localStorage recipes corrupted, resetting:", err);
+      console.warn("corrupted localStorage recipes, resetting:", err);
       localStorage.removeItem(STORAGE_KEY);
       return seedInitialRecipes();
     }
@@ -78,14 +76,13 @@
 
   // ---------- Initial seed ----------
   function seedInitialRecipes() {
-    // Ahmed's chicken noodles with your local image
     const initialRecipe = {
       id: generateId(),
       title: "Ahmed's Special Chicken Noodles",
       description:
         "Quick stir-fried chicken noodles with veggies, perfect for weeknights.",
       ingredients: [
-        " 160-200 g fresh egg noodles or 120–150 g dried egg noodles (about 1½ cups dried).",
+        "160–200 g fresh egg noodles or 120–150 g dried egg noodles (about 1½ cups dried).",
         "250 g boneless chicken (breast or thigh), thinly sliced.",
         "2 tablespoons light soy sauce (for cooking).",
         "1 teaspoon dark soy sauce (optional — for color).",
@@ -105,8 +102,9 @@
         "Salt and white or black pepper, to taste.",
         "Lime wedge or toasted sesame seeds for finishing (optional).",
       ],
+
       steps: [
-        " Take 250 g boneless chicken and slice it into thin, even strips so it cooks quickly and stays tender.",
+        "Take 250 g boneless chicken and slice it into thin, even strips so it cooks quickly and stays tender.",
         "In a bowl, add 1 tbsp light soy sauce, 1 tsp sesame oil, 2 tsp cornflour, 1 tsp sugar, and 1 tbsp water, then mix well to create a smooth marinade.",
         "Add the sliced chicken to the marinade, coat all pieces properly, and let it rest for at least 10 minutes while you prepare other ingredients.",
         "If using dried noodles, boil them in salted water for 3–5 minutes or until just cooked (al dente), then drain immediately.",
@@ -138,8 +136,7 @@
       prepTime: 15,
       cookTime: 15,
       difficulty: "Easy",
-      // 🔽 use your local image file
-      imageUrl: "images/noodles.jpg",
+      imageUrl: "images/noodles.jpg", // ✔ Your noodles photo
       createdAt: new Date().toISOString(),
     };
 
@@ -149,45 +146,135 @@
         title: "One-Pot Veggie Pasta",
         description: "Creamy one-pot pasta loaded with vegetables.",
         ingredients: [
-          "200 g pasta",
-          "1 cup mixed vegetables",
-          "2 cups water or stock",
-          "1/2 cup milk or cream",
+          "200 g pasta (penne or any short pasta)",
+          "1 cup mixed vegetables (carrot, capsicum, peas, corn)",
+          "1 medium onion, finely chopped",
+          "2 cloves garlic, minced",
+          "2 cups water or vegetable stock",
+          "1/2 cup milk or fresh cream",
           "2 tbsp grated cheese",
-          "Salt, pepper, herbs",
+          "1 tbsp butter or olive oil",
+          "1/2 tsp black pepper",
+          "1/2 tsp red chili flakes (optional)",
+          "Salt to taste",
+          "1/2 tsp oregano or mixed herbs",
         ],
         steps: [
-          "Add pasta, vegetables, water, salt and pepper to a pot.",
-          "Boil until pasta is cooked and water is mostly absorbed.",
-          "Stir in milk/cream and cheese, simmer for 2 minutes.",
-          "Adjust seasoning and serve warm.",
+          "Heat butter or olive oil in a pot on medium flame.",
+          "Add chopped onions and minced garlic; sauté until soft and fragrant.",
+          "Add all mixed vegetables and stir-fry for 1–2 minutes.",
+          "Add the pasta into the pot and mix well.",
+          "Pour in 2 cups water or vegetable stock and add salt to taste.",
+          "Cover the pot and cook on medium heat until the pasta becomes soft.",
+          "Once the water reduces, add milk or cream and stir gently.",
+          "Add black pepper, chili flakes, and oregano.",
+          "Mix in the grated cheese and cook for another 1–2 minutes until creamy.",
+          "Turn off the heat and let it sit for 1 minute before serving.",
+          "Serve hot and enjoy your one-pot creamy veggie pasta!",
         ],
         prepTime: 10,
         cookTime: 20,
         difficulty: "Easy",
-        // 🔽 your pasta image
-        imageUrl: "images/pasta.jpg",
-
+        imageUrl: "images/pasta.jpg", // ✔ Your pasta photo
         createdAt: new Date().toISOString(),
-        i,
       },
+
+      {
+        id: generateId(),
+        title: "Chicken Biryani",
+        description:
+          "A flavorful layered chicken biryani cooked with aromatic rice and spices.",
+        ingredients: [
+          "500 g chicken (bone-in or boneless)",
+          "2 cups basmati rice (soak 20–30 mins)",
+          "2 large onions, thinly sliced",
+          "1 medium tomato, chopped",
+          "1/2 cup yogurt",
+          "2 tbsp ginger-garlic paste",
+          "3–4 green chilies, slit",
+          "1/2 cup chopped coriander leaves",
+          "1/2 cup mint leaves",
+          "1 tbsp biryani masala",
+          "1 tsp turmeric powder",
+          "1 tsp red chilli powder",
+          "4 tbsp oil or ghee",
+          "Whole spices: 1 bay leaf, 4 cloves, 4 cardamom, 1 cinnamon stick, 1 star anise",
+          "3 cups water",
+          "Saffron milk (optional): 2 tbsp warm milk + few saffron strands",
+          "Salt to taste",
+        ],
+        steps: [
+          "Wash and soak basmati rice for 20–30 minutes.",
+          "Heat oil or ghee in a large pot and fry the whole spices for 30 seconds.",
+          "Add sliced onions and cook until golden brown.",
+          "Add ginger-garlic paste and sauté until the raw smell disappears.",
+          "Add chicken pieces and cook for 5–7 minutes until lightly browned.",
+          "Add chopped tomatoes, turmeric, red chilli powder, biryani masala, and salt.",
+          "Cook until tomatoes turn soft and chicken releases moisture.",
+          "Add yogurt, mint leaves, and coriander leaves; cook for 5 minutes on medium heat.",
+          "Add 3 cups water and let the chicken cook until about 70–80% done.",
+          "In another pot, boil water and cook the soaked rice until 70% done, then drain completely.",
+          "Spread the half-cooked rice evenly on top of the chicken masala to form layers.",
+          "Sprinkle saffron milk (if using), some fried onions, and a few mint and coriander leaves on top.",
+          "Cover the pot tightly with a lid (you can seal edges with dough for better dum) and cook on low flame for 15–20 minutes.",
+          "Turn off the heat and let the biryani rest for another 10 minutes.",
+          "Gently fluff up the biryani from the sides and serve hot with raita or salad.",
+        ],
+        prepTime: 20,
+        cookTime: 40,
+        difficulty: "Hard",
+        imageUrl: "images/biryani.jpg",
+        createdAt: new Date().toISOString(),
+      },
+
+      {
+        id: generateId(),
+        title: "Cheese Omelette",
+        description: "A soft, fluffy omelette filled with melted cheese.",
+        ingredients: [
+          "2–3 eggs",
+          "3–4 tbsp grated cheese (cheddar, mozzarella, or processed cheese)",
+          "1 tbsp butter or oil",
+          "1/4 cup finely chopped onions",
+          "1 green chili, finely chopped (optional)",
+          "2 tbsp chopped coriander leaves",
+          "Salt to taste",
+          "Black pepper to taste",
+        ],
+        steps: [
+          "Crack the eggs into a bowl, add salt and black pepper, and whisk well until slightly frothy.",
+          "Heat butter or oil in a small non-stick pan over medium heat.",
+          "Add chopped onions and green chilli, and sauté for 1–2 minutes until they soften slightly.",
+          "Pour the whisked eggs into the pan and tilt the pan to spread the mixture evenly.",
+          "Reduce the flame to low and cook until the omelette is almost set on top but still slightly soft.",
+          "Sprinkle grated cheese evenly on one half of the omelette and add chopped coriander leaves.",
+          "Gently fold the other half of the omelette over the cheese using a spatula.",
+          "Cook for another 1–2 minutes on low heat until the cheese melts inside.",
+          "Slide the omelette onto a plate and serve hot with toast or ketchup.",
+        ],
+        prepTime: 5,
+        cookTime: 5,
+        difficulty: "Easy",
+        imageUrl: "images/omelette.jpg",
+        createdAt: new Date().toISOString(),
+      },
+
       {
         id: generateId(),
         title: "Paneer Tikka Wrap",
         description: "Grilled paneer stuffed in soft rotis with salad.",
         ingredients: [
           "200 g paneer cubes",
-          "4 rotis or tortillas",
+          "4 rotis",
           "1/2 cup yogurt",
-          "Spices (tikka masala, chilli, turmeric, salt)",
-          "Onion & capsicum slices",
-          "Green chutney or mayo",
+          "Spices",
+          "Onion & capsicum",
         ],
         steps: [
-          "Marinate paneer in yogurt and spices for 20 minutes.",
-          "Grill or pan-fry paneer with onions and capsicum.",
-          "Warm rotis and spread chutney or mayo.",
-          "Fill with paneer mixture, roll and serve.",
+          "Marinate paneer.",
+          "Grill with onions & capsicum.",
+          "Warm rotis.",
+          "Fill and roll.",
         ],
         prepTime: 20,
         cookTime: 15,
@@ -207,15 +294,13 @@
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   }
 
-  // ---------- View management ----------
-
+  // ---------- View ----------
   function showView(name) {
     Object.values(views).forEach((v) => v.classList.remove("active"));
-    if (views[name]) views[name].classList.add("active");
+    views[name].classList.add("active");
   }
 
-  // ---------- Rendering: list ----------
-
+  // ---------- Render list ----------
   function renderRecipeList() {
     const filtered = applyFilters(recipes);
     recipeGrid.innerHTML = "";
@@ -224,7 +309,6 @@
       emptyState.hidden = false;
       return;
     }
-
     emptyState.hidden = true;
 
     filtered.forEach((recipe) => {
@@ -236,11 +320,10 @@
       imgWrapper.className = "recipe-card-image";
 
       const img = document.createElement("img");
-      img.alt = recipe.title;
       img.src =
         recipe.imageUrl ||
-        "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80";
-
+        "https://images.unsplash.com/photo-1513104890138-7c749659a591";
+      img.alt = recipe.title;
       imgWrapper.appendChild(img);
 
       const body = document.createElement("div");
@@ -259,8 +342,7 @@
 
       const time = document.createElement("span");
       time.className = "badge";
-      const totalTime = (recipe.prepTime || 0) + (recipe.cookTime || 0);
-      time.textContent = `${totalTime} mins total`;
+      time.textContent = `${recipe.prepTime + recipe.cookTime} mins total`;
 
       meta.append(diff, time);
 
@@ -269,12 +351,9 @@
       desc.textContent = recipe.description;
 
       body.append(title, meta, desc);
-
       card.append(imgWrapper, body);
 
-      card.addEventListener("click", () => {
-        openRecipeDetail(recipe.id);
-      });
+      card.addEventListener("click", () => openRecipeDetail(recipe.id));
 
       recipeGrid.appendChild(card);
     });
@@ -282,32 +361,26 @@
 
   function applyFilters(list) {
     return list.filter((recipe) => {
-      // Search
       if (filters.search) {
         const q = filters.search.toLowerCase();
         if (!recipe.title.toLowerCase().includes(q)) return false;
       }
 
-      // Difficulty
       if (filters.difficulty !== "all") {
         if (recipe.difficulty !== filters.difficulty) return false;
       }
 
-      // Max prep time
-      if (filters.maxPrepTime != null && !Number.isNaN(filters.maxPrepTime)) {
-        if ((recipe.prepTime || 0) > filters.maxPrepTime) return false;
+      if (filters.maxPrepTime != null) {
+        if (recipe.prepTime > filters.maxPrepTime) return false;
       }
 
       return true;
     });
   }
 
-  // ---------- Rendering: detail ----------
-
+  // ---------- Detail view ----------
   function openRecipeDetail(id) {
     const recipe = recipes.find((r) => r.id === id);
-    if (!recipe) return;
-
     currentRecipeId = id;
 
     detailContainer.innerHTML = "";
@@ -315,17 +388,17 @@
     const header = document.createElement("div");
     header.className = "detail-header";
 
-    // Image
     const imgWrapper = document.createElement("div");
     imgWrapper.className = "detail-image-wrapper";
+
     const img = document.createElement("img");
-    img.alt = recipe.title;
     img.src =
       recipe.imageUrl ||
-      "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80";
+      "https://images.unsplash.com/photo-1513104890138-7c749659a591";
+    img.alt = recipe.title;
+
     imgWrapper.appendChild(img);
 
-    // Title + meta
     const headerContent = document.createElement("div");
 
     const title = document.createElement("h2");
@@ -354,52 +427,48 @@
     desc.textContent = recipe.description;
 
     headerContent.append(title, meta, desc);
-
     header.append(imgWrapper, headerContent);
 
-    // Body: ingredients + steps
     const body = document.createElement("div");
     body.className = "detail-body";
 
-    const ingredientsSection = document.createElement("section");
     const ingTitle = document.createElement("h3");
     ingTitle.className = "detail-section-title";
     ingTitle.textContent = "Ingredients";
 
     const ingList = document.createElement("ul");
     ingList.className = "detail-list";
-    recipe.ingredients.forEach((item) => {
+    recipe.ingredients.forEach((i) => {
       const li = document.createElement("li");
-      li.textContent = item;
+      li.textContent = i;
       ingList.appendChild(li);
     });
 
+    const ingredientsSection = document.createElement("section");
     ingredientsSection.append(ingTitle, ingList);
 
-    const stepsSection = document.createElement("section");
     const stepsTitle = document.createElement("h3");
     stepsTitle.className = "detail-section-title";
     stepsTitle.textContent = "Steps";
 
     const stepsList = document.createElement("ol");
     stepsList.className = "detail-list";
-    recipe.steps.forEach((step) => {
+    recipe.steps.forEach((s) => {
       const li = document.createElement("li");
-      li.textContent = step;
+      li.textContent = s;
       stepsList.appendChild(li);
     });
 
+    const stepsSection = document.createElement("section");
     stepsSection.append(stepsTitle, stepsList);
 
     body.append(ingredientsSection, stepsSection);
-
     detailContainer.append(header, body);
 
     showView("detail");
   }
 
-  // ---------- Form handling ----------
-
+  // ---------- Form ----------
   function openAddForm() {
     formTitle.textContent = "Add Recipe";
     recipeIdInput.value = "";
@@ -417,7 +486,6 @@
 
   function openEditForm() {
     const recipe = recipes.find((r) => r.id === currentRecipeId);
-    if (!recipe) return;
 
     formTitle.textContent = "Edit Recipe";
     recipeIdInput.value = recipe.id;
@@ -433,8 +501,8 @@
     showView("form");
   }
 
-  function handleFormSubmit(event) {
-    event.preventDefault();
+  function handleFormSubmit(e) {
+    e.preventDefault();
     clearFormErrors();
 
     const data = getFormData();
@@ -446,19 +514,14 @@
     }
 
     if (data.id) {
-      // update
       const index = recipes.findIndex((r) => r.id === data.id);
-      if (index !== -1) {
-        recipes[index] = { ...recipes[index], ...data };
-      }
+      recipes[index] = { ...recipes[index], ...data };
     } else {
-      // create
-      const newRecipe = {
+      recipes.unshift({
         ...data,
         id: generateId(),
         createdAt: new Date().toISOString(),
-      };
-      recipes.unshift(newRecipe);
+      });
     }
 
     saveRecipesToStorage(recipes);
@@ -469,12 +532,12 @@
   function getFormData() {
     const ingredients = ingredientsInput.value
       .split("\n")
-      .map((line) => line.trim())
+      .map((a) => a.trim())
       .filter(Boolean);
 
     const steps = stepsInput.value
       .split("\n")
-      .map((line) => line.trim())
+      .map((a) => a.trim())
       .filter(Boolean);
 
     return {
@@ -493,45 +556,27 @@
   function validateRecipeData(data) {
     const errors = [];
 
-    if (!data.title) {
-      errors.push("Title is required.");
-    }
-    if (!data.description) {
-      errors.push("Description is required.");
-    }
-    if (!data.difficulty) {
-      errors.push("Difficulty is required.");
-    }
-    if (Number.isNaN(data.prepTime) || data.prepTime < 0) {
-      errors.push("Prep time must be a non-negative number.");
-    }
-    if (Number.isNaN(data.cookTime) || data.cookTime < 0) {
-      errors.push("Cook time must be a non-negative number.");
-    }
-    if (!data.ingredients.length) {
-      errors.push("At least one ingredient is required.");
-    }
-    if (!data.steps.length) {
-      errors.push("At least one step is required.");
-    }
-
-    // ✅ allow both absolute URLs AND local image paths
-    if (data.imageUrl && !isProbablyUrl(data.imageUrl)) {
-      errors.push("Image URL / path does not look valid.");
-    }
+    if (!data.title) errors.push("Title is required.");
+    if (!data.description) errors.push("Description is required.");
+    if (!data.difficulty) errors.push("Difficulty is required.");
+    if (isNaN(data.prepTime)) errors.push("Prep time invalid.");
+    if (isNaN(data.cookTime)) errors.push("Cook time invalid.");
+    if (!data.ingredients.length)
+      errors.push("At least one ingredient required.");
+    if (!data.steps.length) errors.push("At least one step required.");
 
     return errors;
   }
 
   function showFormErrors(errors) {
     formErrors.innerHTML = "";
-    const list = document.createElement("ul");
-    errors.forEach((err) => {
+    const ul = document.createElement("ul");
+    errors.forEach((e) => {
       const li = document.createElement("li");
-      li.textContent = err;
-      list.appendChild(li);
+      li.textContent = e;
+      ul.appendChild(li);
     });
-    formErrors.appendChild(list);
+    formErrors.appendChild(ul);
     formErrors.style.display = "block";
   }
 
@@ -540,52 +585,23 @@
     formErrors.innerHTML = "";
   }
 
-  // ✅ improved URL checker – supports local files like "noodles.jpg"
-  function isProbablyUrl(value) {
-    // simple check for common image file paths (local or relative)
-    const imageLike = /^[./\w-]+\.(png|jpe?g|gif|webp|avif)$/i;
-    if (imageLike.test(value)) return true;
-
-    try {
-      // will accept full URLs like https://example.com/img.jpg
-      new URL(value, window.location.href);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
   // ---------- Delete ----------
-
   function deleteCurrentRecipe() {
-    if (!currentRecipeId) return;
-    const recipe = recipes.find((r) => r.id === currentRecipeId);
-    if (!recipe) return;
-
-    const confirmed = window.confirm(
-      `Delete recipe "${recipe.title}"? This cannot be undone.`
-    );
+    const confirmed = confirm("Delete this recipe?");
     if (!confirmed) return;
 
     recipes = recipes.filter((r) => r.id !== currentRecipeId);
-    currentRecipeId = null;
     saveRecipesToStorage(recipes);
-    renderRecipeList();
     showView("home");
+    renderRecipeList();
   }
 
-  // ---------- Event listeners ----------
-
+  // ---------- Events ----------
   function attachEvents() {
     addRecipeBtn.addEventListener("click", openAddForm);
 
-    backToListFromDetail.addEventListener("click", () => {
-      showView("home");
-    });
-
-    backToListFromForm.addEventListener("click", () => {
-      showView("home");
-    });
+    backToListFromDetail.addEventListener("click", () => showView("home"));
+    backToListFromForm.addEventListener("click", () => showView("home"));
 
     editRecipeBtn.addEventListener("click", openEditForm);
     deleteRecipeBtn.addEventListener("click", deleteCurrentRecipe);
@@ -601,8 +617,7 @@
     });
 
     maxPrepTimeFilter.addEventListener("input", (e) => {
-      const value = e.target.value;
-      filters.maxPrepTime = value === "" ? null : Number(value);
+      filters.maxPrepTime = e.target.value ? Number(e.target.value) : null;
       renderRecipeList();
     });
 
@@ -616,7 +631,6 @@
   }
 
   // ---------- Init ----------
-
   function init() {
     recipes = loadRecipesFromStorage();
     attachEvents();
