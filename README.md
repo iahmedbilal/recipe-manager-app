@@ -15,7 +15,7 @@ https://iahmedbilal.github.io/recipe-manager-app/
 - Fully responsive layout (mobile + desktop)
 - Data saved locally in the browser
 
-## 💾 LocalStorage Structure
+## 💾 Data Structure in LocalStorage Structure
 Each recipe is stored under:
 
 "recipes"
@@ -44,7 +44,7 @@ as
   
 }
 
-## ⚙️ How to Run
+## ⚙️ How to Run the app
 ### Option 1 – Open Directly :
 
 -Download the project
