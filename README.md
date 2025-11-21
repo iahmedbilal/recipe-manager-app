@@ -67,4 +67,14 @@ as
 - Ingredients and steps are text-based (one per line)
 - No authentication or cloud sync
 
+ ## 📸 Screenshots
+
+Below are screenshots of the Recipe Manager App:
+
+### Home Page 
+
+### Add Recipe Page
+
+### Recipe Detail Page
+
 
