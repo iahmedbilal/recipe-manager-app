@@ -71,10 +71,18 @@ as
 
 Below are screenshots of the Recipe Manager App:
 
-### Home Page 
+### Home Page :
+<p align="center">
+  <img src="/home.png" width="50%">
 
-### Add Recipe Page
+### Add Recipe Page :
+  <p align="center">
+  <img src="/add.png" width="50%">
 
-### Recipe Detail Page
+ ### Recipe Detail Page :
+  <p align="center">
+  <img src="/detail.png" width="50%">
+</p>
+
 
 
