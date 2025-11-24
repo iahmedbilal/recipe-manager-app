@@ -1,11 +1,9 @@
-/* -------- Base layout & theme -------- */
-
 :root {
   --bg: #0b0b0d;
   --bg-elevated: #17171b;
   --bg-soft: #1f1f24;
-  --accent: #ff6b35; /* warm orange */
-  --accent-soft: #ffb347; /* softer orange */
+  --accent: #ff6b35;
+  --accent-soft: #ffb347;
   --danger: #ff3b52;
   --text-main: #f9fafb;
   --text-muted: #9ca3af;
@@ -37,8 +35,6 @@ body {
   color: var(--text-main);
   -webkit-font-smoothing: antialiased;
 }
-
-/* -------- App shell -------- */
 
 .app-header {
   position: sticky;
@@ -83,8 +79,6 @@ body {
   padding: 0 1.25rem;
 }
 
-/* -------- Views -------- */
-
 .view {
   display: none;
 }
@@ -92,8 +86,6 @@ body {
 .view.active {
   display: block;
 }
-
-/* -------- Toolbar / filters -------- */
 
 .toolbar {
   display: grid;
@@ -149,7 +141,7 @@ select:focus {
   transform: translateY(-1px);
 }
 
-/* -------- Buttons -------- */
+/* - Buttons - */
 
 .btn {
   border: none;
@@ -209,7 +201,7 @@ select:focus {
   transform: translateY(-1px);
 }
 
-/* -------- Recipe grid & cards -------- */
+/* -- Recipe grid & cards -- */
 
 .recipe-grid {
   display: grid;
@@ -309,16 +301,12 @@ select:focus {
   color: var(--text-muted);
 }
 
-/* -------- Empty state -------- */
-
 .empty-state {
   margin-top: 2.2rem;
   text-align: center;
   color: var(--text-muted);
   font-size: 0.95rem;
 }
-
-/* -------- Detail view -------- */
 
 #detailView {
   background: rgba(5, 5, 7, 0.85);
@@ -399,8 +387,6 @@ select:focus {
   justify-content: flex-end;
 }
 
-/* -------- Form view -------- */
-
 #formView {
   background: rgba(5, 5, 7, 0.9);
   border-radius: var(--radius-xl);
@@ -460,8 +446,6 @@ textarea {
   font-size: 0.83rem;
   color: #181415;
 }
-
-/* -------- Responsive tweaks -------- */
 
 @media (max-width: 900px) {
   .toolbar {

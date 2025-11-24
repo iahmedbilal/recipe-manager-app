@@ -1,5 +1,3 @@
-
-
 (function () {
   "use strict";
 
@@ -13,6 +11,7 @@
     search: "",
     difficulty: "all",
     maxPrepTime: null,
+    type: "all",
   };
 
   // ---------- DOM refs ----------
@@ -28,6 +27,7 @@
   const searchInput = document.getElementById("searchInput");
   const difficultyFilter = document.getElementById("difficultyFilter");
   const maxPrepTimeFilter = document.getElementById("maxPrepTimeFilter");
+  const typeFilter = document.getElementById("typeFilter");
 
   const addRecipeBtn = document.getElementById("addRecipeBtn");
   const backToListFromDetail = document.getElementById("backToListFromDetail");
@@ -37,6 +37,10 @@
   const editRecipeBtn = document.getElementById("editRecipeBtn");
   const deleteRecipeBtn = document.getElementById("deleteRecipeBtn");
 
+  // NEW: Export & Share buttons
+  const exportPdfBtn = document.getElementById("exportPdfBtn");
+  const shareRecipeBtn = document.getElementById("shareRecipeBtn");
+
   const formTitle = document.getElementById("formTitle");
   const recipeForm = document.getElementById("recipeForm");
   const formErrors = document.getElementById("formErrors");
@@ -44,14 +48,59 @@
   const recipeIdInput = document.getElementById("recipeId");
   const titleInput = document.getElementById("titleInput");
   const difficultyInput = document.getElementById("difficultyInput");
+  const typeInput = document.getElementById("typeInput");
   const prepTimeInput = document.getElementById("prepTimeInput");
   const cookTimeInput = document.getElementById("cookTimeInput");
   const imageUrlInput = document.getElementById("imageUrlInput");
+  const videoUrlInput = document.getElementById("videoUrlInput"); // NEW
   const descriptionInput = document.getElementById("descriptionInput");
   const ingredientsInput = document.getElementById("ingredientsInput");
   const stepsInput = document.getElementById("stepsInput");
   const resetFormBtn = document.getElementById("resetFormBtn");
 
+  // ---------- Helpers for rating/reviews + video ----------
+
+  function normalizeRecipe(recipe) {
+    const normalizedType =
+      recipe.type === "Veg" || recipe.type === "Non-Veg" ? recipe.type : "Veg";
+
+    return {
+      ...recipe,
+      type: normalizedType,
+      reviews: Array.isArray(recipe.reviews) ? recipe.reviews : [],
+      ratingCount:
+        typeof recipe.ratingCount === "number" ? recipe.ratingCount : 0,
+      rating: typeof recipe.rating === "number" ? recipe.rating : 0,
+      videoUrl: recipe.videoUrl || null,
+    };
+  }
+
+  function normalizeRecipes(list) {
+    return list.map(normalizeRecipe);
+  }
+
+  // Helper: build embeddable YouTube URL from watch / short link
+  function getYouTubeEmbedUrl(rawUrl) {
+    if (!rawUrl) return null;
+    try {
+      const url = new URL(rawUrl);
+      const host = url.hostname.replace("www.", "");
+      let videoId = null;
+
+      if (host === "youtube.com" || host === "m.youtube.com") {
+        videoId = url.searchParams.get("v");
+      } else if (host === "youtu.be") {
+        videoId = url.pathname.slice(1);
+      }
+
+      if (!videoId) return null;
+      return "https://www.youtube.com/embed/" + videoId;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // ---------- Storage ----------
   function loadRecipesFromStorage() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
@@ -62,7 +111,7 @@
     try {
       const parsed = JSON.parse(raw);
       if (!Array.isArray(parsed)) throw new Error("recipes not array");
-      return parsed;
+      return normalizeRecipes(parsed);
     } catch (err) {
       console.warn("corrupted localStorage recipes, resetting:", err);
       localStorage.removeItem(STORAGE_KEY);
@@ -102,7 +151,6 @@
         "Salt and white or black pepper, to taste.",
         "Lime wedge or toasted sesame seeds for finishing (optional).",
       ],
-
       steps: [
         "Take 250 g boneless chicken and slice it into thin, even strips so it cooks quickly and stays tender.",
         "In a bowl, add 1 tbsp light soy sauce, 1 tsp sesame oil, 2 tsp cornflour, 1 tsp sugar, and 1 tbsp water, then mix well to create a smooth marinade.",
@@ -136,7 +184,9 @@
       prepTime: 15,
       cookTime: 15,
       difficulty: "Easy",
-      imageUrl: "images/noodles.jpg", // ✔ Your noodles photo
+      type: "Non-Veg",
+      imageUrl: "images/noodles.jpg",
+      videoUrl: `https://youtu.be/AthGc8rDtHc?si=dqWUBMjOqGleLDda`,
       createdAt: new Date().toISOString(),
     };
 
@@ -175,7 +225,9 @@
         prepTime: 10,
         cookTime: 20,
         difficulty: "Easy",
-        imageUrl: "images/pasta.jpg", // ✔ Your pasta photo
+        type: "Veg",
+        imageUrl: "images/pasta.jpg",
+        videoUrl: `https://youtu.be/l4PQzpYFm04?si=9BdqtsEfg2ZCZT0c`,
         createdAt: new Date().toISOString(),
       },
 
@@ -216,14 +268,16 @@
           "In another pot, boil water and cook the soaked rice until 70% done, then drain completely.",
           "Spread the half-cooked rice evenly on top of the chicken masala to form layers.",
           "Sprinkle saffron milk (if using), some fried onions, and a few mint and coriander leaves on top.",
-          "Cover the pot tightly with a lid (you can seal edges with dough for better dum) and cook on low flame for 15–20 minutes.",
+          "Cover the pot tightly with a lid and cook on low flame for 15–20 minutes.",
           "Turn off the heat and let the biryani rest for another 10 minutes.",
           "Gently fluff up the biryani from the sides and serve hot with raita or salad.",
         ],
         prepTime: 20,
         cookTime: 40,
         difficulty: "Hard",
+        type: "Non-Veg",
         imageUrl: "images/biryani.jpg",
+        videoUrl: `https://youtu.be/EiVoWp5b93s?si=Gbi2Miu707YCyPs8`,
         createdAt: new Date().toISOString(),
       },
 
@@ -255,7 +309,9 @@
         prepTime: 5,
         cookTime: 5,
         difficulty: "Easy",
+        type: "Non-Veg",
         imageUrl: "images/omelette.jpg",
+        videoUrl: `https://youtu.be/RsKonQWs8z8?si=uilLtmN2MSQg4m_5`,
         createdAt: new Date().toISOString(),
       },
 
@@ -267,25 +323,30 @@
           "200 g paneer cubes",
           "4 rotis",
           "1/2 cup yogurt",
-          "Spices",
-          "Onion & capsicum",
+          "Spices (red chilli powder, turmeric, garam masala)",
+          "1 onion, sliced",
+          "1 capsicum, sliced",
         ],
         steps: [
-          "Marinate paneer.",
-          "Grill with onions & capsicum.",
-          "Warm rotis.",
-          "Fill and roll.",
+          "Mix yogurt with spices to make a marinade.",
+          "Add paneer cubes and coat well; rest 15–20 mins.",
+          "Grill or pan-fry paneer with onions and capsicum until slightly charred.",
+          "Warm the rotis on a tawa.",
+          "Place the paneer mixture in the centre of each roti.",
+          "Roll tightly into a wrap and serve hot.",
         ],
         prepTime: 20,
         cookTime: 15,
         difficulty: "Medium",
+        type: "Veg",
         imageUrl:
           "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=800&q=80",
+        videoUrl: `https://youtu.be/rre7unozEJk?si=lSLRw_xj2XDMHT5x`,
         createdAt: new Date().toISOString(),
       },
     ];
 
-    const data = [initialRecipe, ...samples];
+    const data = normalizeRecipes([initialRecipe, ...samples]);
     saveRecipesToStorage(data);
     return data;
   }
@@ -302,7 +363,18 @@
 
   // ---------- Render list ----------
   function renderRecipeList() {
-    const filtered = applyFilters(recipes);
+    const filtered = applyFilters(recipes.slice());
+
+    // Sort by rating (highest first), then newest
+    filtered.sort((a, b) => {
+      const aRating = a.rating || 0;
+      const bRating = b.rating || 0;
+      if (bRating !== aRating) return bRating - aRating;
+      const aDate = a.createdAt ? Date.parse(a.createdAt) : 0;
+      const bDate = b.createdAt ? Date.parse(b.createdAt) : 0;
+      return bDate - aDate;
+    });
+
     recipeGrid.innerHTML = "";
 
     if (!filtered.length) {
@@ -340,11 +412,25 @@
       diff.className = "badge badge-difficulty";
       diff.textContent = recipe.difficulty;
 
+      const typeBadge = document.createElement("span");
+      typeBadge.className = "badge";
+      typeBadge.textContent = recipe.type || "Type";
+
       const time = document.createElement("span");
       time.className = "badge";
       time.textContent = `${recipe.prepTime + recipe.cookTime} mins total`;
 
-      meta.append(diff, time);
+      const ratingBadge = document.createElement("span");
+      ratingBadge.className = "badge";
+      if (recipe.ratingCount > 0) {
+        ratingBadge.textContent = `⭐ ${recipe.rating.toFixed(1)} (${
+          recipe.ratingCount
+        })`;
+      } else {
+        ratingBadge.textContent = "No ratings";
+      }
+
+      meta.append(diff, typeBadge, time, ratingBadge);
 
       const desc = document.createElement("p");
       desc.className = "recipe-description";
@@ -374,13 +460,17 @@
         if (recipe.prepTime > filters.maxPrepTime) return false;
       }
 
+      if (filters.type !== "all") {
+        if (recipe.type !== filters.type) return false;
+      }
+
       return true;
     });
   }
 
   // ---------- Detail view ----------
   function openRecipeDetail(id) {
-    const recipe = recipes.find((r) => r.id === id);
+    const recipe = normalizeRecipe(recipes.find((r) => r.id === id));
     currentRecipeId = id;
 
     detailContainer.innerHTML = "";
@@ -412,6 +502,10 @@
     diff.className = "badge badge-difficulty";
     diff.textContent = recipe.difficulty;
 
+    const typeBadge = document.createElement("span");
+    typeBadge.className = "badge";
+    typeBadge.textContent = recipe.type || "Type";
+
     const prep = document.createElement("span");
     prep.className = "badge";
     prep.textContent = `Prep: ${recipe.prepTime} mins`;
@@ -420,7 +514,17 @@
     cook.className = "badge";
     cook.textContent = `Cook: ${recipe.cookTime} mins`;
 
-    meta.append(diff, prep, cook);
+    const ratingMeta = document.createElement("span");
+    ratingMeta.className = "badge";
+    if (recipe.ratingCount > 0) {
+      ratingMeta.textContent = `⭐ ${recipe.rating.toFixed(1)} (${
+        recipe.ratingCount
+      })`;
+    } else {
+      ratingMeta.textContent = "No ratings yet";
+    }
+
+    meta.append(diff, typeBadge, prep, cook, ratingMeta);
 
     const desc = document.createElement("p");
     desc.className = "detail-description";
@@ -462,10 +566,334 @@
     const stepsSection = document.createElement("section");
     stepsSection.append(stepsTitle, stepsList);
 
-    body.append(ingredientsSection, stepsSection);
+    // ---- Rating & Reviews section ----
+    const reviewSection = document.createElement("section");
+
+    const reviewTitle = document.createElement("h3");
+    reviewTitle.className = "detail-section-title";
+    reviewTitle.textContent = "Rating & Reviews";
+
+    const ratingSummary = document.createElement("p");
+    ratingSummary.className = "detail-description";
+    if (recipe.ratingCount > 0) {
+      ratingSummary.textContent = `Average rating: ${recipe.rating.toFixed(
+        1
+      )} / 5 (${recipe.ratingCount} rating${
+        recipe.ratingCount > 1 ? "s" : ""
+      })`;
+    } else {
+      ratingSummary.textContent =
+        "No ratings yet. Be the first to rate this recipe!";
+    }
+
+    let selectedRating = 0;
+    const ratingField = document.createElement("div");
+    ratingField.className = "field-group";
+    const ratingLabel = document.createElement("label");
+    ratingLabel.textContent = "Your rating:";
+    const starsWrapper = document.createElement("div");
+
+    const starButtons = [];
+    function updateStarUI() {
+      starButtons.forEach((btn) => {
+        const value = Number(btn.dataset.value);
+        if (value <= selectedRating) {
+          btn.style.color = "var(--accent-soft)";
+        } else {
+          btn.style.color = "var(--text-muted)";
+        }
+      });
+    }
+
+    for (let i = 1; i <= 5; i++) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "btn btn-ghost";
+      btn.dataset.value = String(i);
+      btn.textContent = "★";
+      btn.addEventListener("click", () => {
+        selectedRating = i;
+        updateStarUI();
+      });
+      starButtons.push(btn);
+      starsWrapper.appendChild(btn);
+    }
+    updateStarUI();
+
+    ratingField.append(ratingLabel, starsWrapper);
+
+    const reviewField = document.createElement("div");
+    reviewField.className = "field-group";
+    const reviewLabel = document.createElement("label");
+    reviewLabel.textContent = "Your review (optional):";
+    const reviewInput = document.createElement("textarea");
+    reviewInput.rows = 3;
+    reviewField.append(reviewLabel, reviewInput);
+
+    const reviewActions = document.createElement("div");
+    reviewActions.className = "form-actions";
+    const submitReviewBtn = document.createElement("button");
+    submitReviewBtn.type = "button";
+    submitReviewBtn.className = "btn btn-primary";
+    submitReviewBtn.textContent = "Submit review";
+    reviewActions.appendChild(submitReviewBtn);
+
+    submitReviewBtn.addEventListener("click", () => {
+      if (!selectedRating) {
+        alert("Please select a rating between 1 and 5 stars.");
+        return;
+      }
+      const text = reviewInput.value.trim();
+      addReview(recipe.id, selectedRating, text);
+    });
+
+    // Existing reviews
+    let reviewsBlock;
+    if (recipe.reviews && recipe.reviews.length) {
+      const reviewsTitle = document.createElement("h4");
+      reviewsTitle.className = "detail-section-title";
+      reviewsTitle.textContent = "What others say";
+
+      const reviewsList = document.createElement("ul");
+      reviewsList.className = "detail-list";
+
+      recipe.reviews.forEach((rev) => {
+        const li = document.createElement("li");
+        const stars = "★".repeat(rev.rating || 0).padEnd(5, "☆");
+        const text = rev.text ? ` – ${rev.text}` : "";
+        li.textContent = `${stars}${text}`;
+        reviewsList.appendChild(li);
+      });
+
+      reviewsBlock = document.createElement("div");
+      reviewsBlock.append(reviewsTitle, reviewsList);
+    } else {
+      const noReviews = document.createElement("p");
+      noReviews.className = "detail-description";
+      noReviews.textContent = "No reviews yet.";
+      reviewsBlock = noReviews;
+    }
+
+    reviewSection.append(
+      reviewTitle,
+      ratingSummary,
+      ratingField,
+      reviewField,
+      reviewActions,
+      reviewsBlock
+    );
+
+    // NEW: Cooking Video section (if videoUrl set)
+    let videoSection = null;
+    if (recipe.videoUrl) {
+      videoSection = document.createElement("section");
+
+      const videoTitle = document.createElement("h3");
+      videoTitle.className = "detail-section-title";
+      videoTitle.textContent = "Cooking Video";
+
+      const embedUrl = getYouTubeEmbedUrl(recipe.videoUrl);
+
+      if (embedUrl) {
+        const iframe = document.createElement("iframe");
+        iframe.src = embedUrl;
+        iframe.width = "100%";
+        iframe.height = "260";
+        iframe.loading = "lazy";
+        iframe.style.border = "0";
+        iframe.allow =
+          "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+        iframe.allowFullscreen = true;
+        videoSection.append(videoTitle, iframe);
+      } else {
+        const link = document.createElement("a");
+        link.href = recipe.videoUrl;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Watch cooking video";
+        videoSection.append(videoTitle, link);
+      }
+    }
+
+    body.append(ingredientsSection, stepsSection, reviewSection);
+    if (videoSection) {
+      body.append(videoSection);
+    }
+
     detailContainer.append(header, body);
 
     showView("detail");
+  }
+
+  // ---------- Rating / Review logic ----------
+  function addReview(recipeId, ratingValue, text) {
+    const recipe = recipes.find((r) => r.id === recipeId);
+    if (!recipe) return;
+
+    const currentRating = recipe.rating || 0;
+    const currentCount = recipe.ratingCount || 0;
+
+    const newCount = currentCount + 1;
+    const newTotal = currentRating * currentCount + ratingValue;
+    const newAverage = newTotal / newCount;
+
+    const newReview = {
+      id: generateId(),
+      rating: ratingValue,
+      text,
+      createdAt: new Date().toISOString(),
+    };
+
+    recipe.rating = Number(newAverage.toFixed(2));
+    recipe.ratingCount = newCount;
+    recipe.reviews = [newReview].concat(
+      Array.isArray(recipe.reviews) ? recipe.reviews : []
+    );
+
+    saveRecipesToStorage(recipes);
+    renderRecipeList();
+    openRecipeDetail(recipeId);
+  }
+
+  // ---------- Export to PDF ----------
+  function exportCurrentRecipeAsPdf() {
+    if (!currentRecipeId) return;
+    const recipe = normalizeRecipe(
+      recipes.find((r) => r.id === currentRecipeId)
+    );
+    if (!recipe) return;
+
+    const ingredientsHtml = (recipe.ingredients || [])
+      .map((i) => `<li>${i}</li>`)
+      .join("");
+    const stepsHtml = (recipe.steps || []).map((s) => `<li>${s}</li>`).join("");
+
+    const win = window.open("", "_blank");
+    if (!win) {
+      alert("Please allow pop-ups to export the recipe.");
+      return;
+    }
+
+    const doc = win.document;
+    doc.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>${recipe.title} - Recipe</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 24px;
+      color: #111827;
+      line-height: 1.5;
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 1.8rem;
+    }
+    .meta {
+      margin: 8px 0 16px;
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+    h2 {
+      font-size: 1.1rem;
+      margin-top: 18px;
+      margin-bottom: 6px;
+    }
+    ul, ol {
+      margin-top: 4px;
+      padding-left: 18px;
+    }
+    .section {
+      margin-bottom: 12px;
+    }
+    .rating {
+      margin-top: 4px;
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <h1>${recipe.title}</h1>
+  <div class="meta">
+    Type: ${recipe.type} · Difficulty: ${recipe.difficulty} · Prep: ${
+      recipe.prepTime
+    } mins · Cook: ${recipe.cookTime} mins
+  </div>
+  <div class="section">
+    <h2>Description</h2>
+    <p>${recipe.description}</p>
+  </div>
+  <div class="section">
+    <h2>Ingredients</h2>
+    <ul>${ingredientsHtml}</ul>
+  </div>
+  <div class="section">
+    <h2>Steps</h2>
+    <ol>${stepsHtml}</ol>
+  </div>
+  <div class="section rating">
+    ${
+      recipe.ratingCount > 0
+        ? `Average rating: ${recipe.rating.toFixed(1)} / 5 (${
+            recipe.ratingCount
+          } rating${recipe.ratingCount > 1 ? "s" : ""})`
+        : "No ratings yet."
+    }
+  </div>
+</body>
+</html>`);
+
+    doc.close();
+    win.focus();
+    win.print(); // user can choose "Save as PDF"
+  }
+
+  // ---------- Share recipe ----------
+  function shareCurrentRecipe() {
+    if (!currentRecipeId) return;
+    const recipe = normalizeRecipe(
+      recipes.find((r) => r.id === currentRecipeId)
+    );
+    if (!recipe) return;
+
+    const baseText = `${recipe.title}
+
+${recipe.description}
+
+Prep: ${recipe.prepTime} mins · Cook: ${recipe.cookTime} mins`;
+
+    const shareData = {
+      title: recipe.title,
+      text: baseText,
+      url: window.location.href,
+    };
+
+    if (navigator.share) {
+      navigator.share(shareData).catch(() => {
+        // user cancelled share – silently ignore
+      });
+    } else {
+      const fallbackText = `${baseText}
+
+${window.location.href}`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard
+          .writeText(fallbackText)
+          .then(() => {
+            alert(
+              "Recipe details copied to clipboard. You can paste and share it anywhere!"
+            );
+          })
+          .catch(() => {
+            alert("Here is the recipe you can share:\n\n" + fallbackText);
+          });
+      } else {
+        alert("Here is the recipe you can share:\n\n" + fallbackText);
+      }
+    }
   }
 
   // ---------- Form ----------
@@ -474,9 +902,11 @@
     recipeIdInput.value = "";
     titleInput.value = "";
     difficultyInput.value = "";
+    typeInput.value = "";
     prepTimeInput.value = "";
     cookTimeInput.value = "";
     imageUrlInput.value = "";
+    videoUrlInput.value = ""; // NEW
     descriptionInput.value = "";
     ingredientsInput.value = "";
     stepsInput.value = "";
@@ -486,14 +916,17 @@
 
   function openEditForm() {
     const recipe = recipes.find((r) => r.id === currentRecipeId);
+    if (!recipe) return;
 
     formTitle.textContent = "Edit Recipe";
     recipeIdInput.value = recipe.id;
     titleInput.value = recipe.title;
     difficultyInput.value = recipe.difficulty;
+    typeInput.value = recipe.type || "";
     prepTimeInput.value = recipe.prepTime;
     cookTimeInput.value = recipe.cookTime;
     imageUrlInput.value = recipe.imageUrl || "";
+    videoUrlInput.value = recipe.videoUrl || ""; // NEW
     descriptionInput.value = recipe.description;
     ingredientsInput.value = recipe.ingredients.join("\n");
     stepsInput.value = recipe.steps.join("\n");
@@ -515,12 +948,18 @@
 
     if (data.id) {
       const index = recipes.findIndex((r) => r.id === data.id);
-      recipes[index] = { ...recipes[index], ...data };
+      recipes[index] = {
+        ...recipes[index],
+        ...data,
+      };
     } else {
       recipes.unshift({
         ...data,
         id: generateId(),
         createdAt: new Date().toISOString(),
+        rating: 0,
+        ratingCount: 0,
+        reviews: [],
       });
     }
 
@@ -545,9 +984,11 @@
       title: titleInput.value.trim(),
       description: descriptionInput.value.trim(),
       difficulty: difficultyInput.value,
+      type: typeInput.value,
       prepTime: Number(prepTimeInput.value),
       cookTime: Number(cookTimeInput.value),
       imageUrl: imageUrlInput.value.trim() || null,
+      videoUrl: videoUrlInput.value.trim() || null, // NEW
       ingredients,
       steps,
     };
@@ -559,6 +1000,7 @@
     if (!data.title) errors.push("Title is required.");
     if (!data.description) errors.push("Description is required.");
     if (!data.difficulty) errors.push("Difficulty is required.");
+    if (!data.type) errors.push("Type is required.");
     if (isNaN(data.prepTime)) errors.push("Prep time invalid.");
     if (isNaN(data.cookTime)) errors.push("Cook time invalid.");
     if (!data.ingredients.length)
@@ -587,13 +1029,15 @@
 
   // ---------- Delete ----------
   function deleteCurrentRecipe() {
+    if (!currentRecipeId) return;
     const confirmed = confirm("Delete this recipe?");
     if (!confirmed) return;
 
     recipes = recipes.filter((r) => r.id !== currentRecipeId);
     saveRecipesToStorage(recipes);
-    showView("home");
+    currentRecipeId = null;
     renderRecipeList();
+    showView("home");
   }
 
   // ---------- Events ----------
@@ -605,6 +1049,13 @@
 
     editRecipeBtn.addEventListener("click", openEditForm);
     deleteRecipeBtn.addEventListener("click", deleteCurrentRecipe);
+
+    if (exportPdfBtn) {
+      exportPdfBtn.addEventListener("click", exportCurrentRecipeAsPdf);
+    }
+    if (shareRecipeBtn) {
+      shareRecipeBtn.addEventListener("click", shareCurrentRecipe);
+    }
 
     searchInput.addEventListener("input", (e) => {
       filters.search = e.target.value.trim();
@@ -620,6 +1071,13 @@
       filters.maxPrepTime = e.target.value ? Number(e.target.value) : null;
       renderRecipeList();
     });
+
+    if (typeFilter) {
+      typeFilter.addEventListener("change", (e) => {
+        filters.type = e.target.value;
+        renderRecipeList();
+      });
+    }
 
     recipeForm.addEventListener("submit", handleFormSubmit);
 

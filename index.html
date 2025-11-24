@@ -16,7 +16,6 @@
     </header>
 
     <main class="app-main">
-      <!-- HOME / LIST VIEW -->
       <section id="homeView" class="view active">
         <div class="toolbar">
           <div class="field-group">
@@ -35,6 +34,15 @@
               <option value="Easy">Easy</option>
               <option value="Medium">Medium</option>
               <option value="Hard">Hard</option>
+            </select>
+          </div>
+
+          <div class="field-group">
+            <label for="typeFilter">Type</label>
+            <select id="typeFilter">
+              <option value="all">All</option>
+              <option value="Veg">Veg</option>
+              <option value="Non-Veg">Non-Veg</option>
             </select>
           </div>
 
@@ -71,6 +79,12 @@
         <div class="detail-actions">
           <button id="editRecipeBtn" class="btn btn-secondary">✏️ Edit</button>
           <button id="deleteRecipeBtn" class="btn btn-danger">🗑 Delete</button>
+
+          <!-- NEW: Export & Share buttons (reuse existing button styles) -->
+          <button id="exportPdfBtn" class="btn btn-secondary">📄 Export</button>
+          <button id="shareRecipeBtn" class="btn btn-secondary">
+            📤 Share
+          </button>
         </div>
       </section>
 
@@ -107,6 +121,15 @@
             </div>
 
             <div class="field-group">
+              <label for="typeInput">Type *</label>
+              <select id="typeInput" required>
+                <option value="">Select type</option>
+                <option value="Veg">Veg</option>
+                <option value="Non-Veg">Non-Veg</option>
+              </select>
+            </div>
+
+            <div class="field-group">
               <label for="prepTimeInput">Prep time (mins) *</label>
               <input
                 type="number"
@@ -134,6 +157,18 @@
                 type="url"
                 id="imageUrlInput"
                 placeholder="https://example.com/my-dish.jpg"
+              />
+            </div>
+
+            <!-- NEW: Cooking video URL field (optional) -->
+            <div class="field-group full-width">
+              <label for="videoUrlInput"
+                >Cooking video URL (YouTube, optional)</label
+              >
+              <input
+                type="url"
+                id="videoUrlInput"
+                placeholder="https://www.youtube.com/watch?v=..."
               />
             </div>
 
@@ -183,7 +218,7 @@
     </main>
 
     <footer class="app-footer">
-      <small>Ahmed Bilal's Recipe manager app</small>
+      <p>Ⓒ Ahmed Bilal's Recipe Manager App — All Rights Reserved.</p>
     </footer>
 
     <script src="app.js"></script>
